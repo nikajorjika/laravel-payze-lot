@@ -7,11 +7,9 @@ use Illuminate\Support\Facades\Route;
 use PayzeIO\LaravelPayze\Enums\Currency;
 use PayzeIO\LaravelPayze\Enums\Language;
 use PayzeIO\LaravelPayze\Facades\Payze;
-use PayzeIO\LaravelPayze\Exceptions\PaymentRequestException;
 use PayzeIO\LaravelPayze\Exceptions\RoutesNotDefinedException;
 use PayzeIO\LaravelPayze\Exceptions\UnsupportedCurrencyException;
 use PayzeIO\LaravelPayze\Exceptions\UnsupportedLanguageException;
-use PayzeIO\LaravelPayze\Objects\Split;
 
 abstract class PayRequestAttributes extends ApiRequest
 {
@@ -19,11 +17,6 @@ abstract class PayRequestAttributes extends ApiRequest
      * @var float
      */
     protected float $amount = 0;
-
-    /**
-     * @var array
-     */
-    protected array $split = [];
 
     /**
      * @var string
@@ -68,28 +61,6 @@ abstract class PayRequestAttributes extends ApiRequest
     public function amount(float $amount): self
     {
         $this->amount = max($amount, 0);
-
-        return $this;
-    }
-
-    /**
-     * Split transaction to different IBANs
-     *
-     * @param mixed $splits
-     *
-     * @return $this
-     * @throws \PayzeIO\LaravelPayze\Exceptions\PaymentRequestException
-     * @throws \Throwable
-     */
-    public function split($splits): self
-    {
-        $splits = !is_array($splits) ? func_get_args() : $splits;
-
-        foreach ($splits as $split) {
-            throw_unless(is_a($split, Split::class), new PaymentRequestException('Incorrect format. Please pass Split object'));
-        }
-
-        $this->split = $splits;
 
         return $this;
     }
@@ -241,14 +212,6 @@ abstract class PayRequestAttributes extends ApiRequest
     }
 
     /**
-     * @return array
-     */
-    public function getSplit(): array
-    {
-        return $this->split;
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function getModel(): ?Model
@@ -288,7 +251,6 @@ abstract class PayRequestAttributes extends ApiRequest
             'preauthorize' => $this->preauthorize,
             'callback' => $successName,
             'callbackError' => $failName,
-            'split' => filled($this->split) ? array_map(fn(Split $split) => $split->toRequest(), $this->split) : [],
         ];
     }
 
@@ -304,7 +266,6 @@ abstract class PayRequestAttributes extends ApiRequest
             'amount' => $this->amount,
             'currency' => $this->currency,
             'lang' => $this->lang,
-            'split' => filled($this->split) ? array_map(fn(Split $split) => $split->toRequest(), $this->split) : [],
         ];
     }
 }

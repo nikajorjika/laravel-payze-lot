@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property bool $refundable
  * @property string $currency
  * @property string $lang
- * @property array|null $split
  * @property bool $can_be_committed
  * @property string|null $result_code
  * @property string|null $card_mask
@@ -62,7 +61,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @method static Builder|PayzeTransaction whereRefundable($value)
  * @method static Builder|PayzeTransaction whereRefunded($value)
  * @method static Builder|PayzeTransaction whereResultCode($value)
- * @method static Builder|PayzeTransaction whereSplit($value)
  * @method static Builder|PayzeTransaction whereStatus($value)
  * @method static Builder|PayzeTransaction whereTransactionId($value)
  * @method static Builder|PayzeTransaction whereUpdatedAt($value)
@@ -88,7 +86,6 @@ class PayzeTransaction extends Model
         'amount',
         'currency',
         'lang',
-        'split',
         'commission',
         'can_be_committed',
         'refundable',
@@ -106,7 +103,6 @@ class PayzeTransaction extends Model
         'amount' => 'float',
         'final_amount' => 'float',
         'commission' => 'float',
-        'split' => 'array',
         'can_be_committed' => 'boolean',
         'refunded' => 'float',
         'refundable' => 'boolean',

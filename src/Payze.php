@@ -137,7 +137,6 @@ class Payze
             'transaction_id' => $data['transactionId'],
         ]), function (PayzeTransaction $transaction) use ($data, $request) {
             $transaction->fill(array_merge($request ? $request->toModel() : [], array_filter([
-                'split' => $data['split'] ?? null,
                 'status' => $status = $data['status'] ?? Status::CREATED,
                 'is_paid' => Status::isPaid($status),
                 'is_completed' => Status::isCompleted($status),
